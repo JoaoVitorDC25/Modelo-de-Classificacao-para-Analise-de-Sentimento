@@ -18,6 +18,7 @@ from clean_data import removeNull, cleanText
 
 from predicting_sentiments import predictSent
 from data_preparation import prepareData
+from model_training import buildPipeline, getHyperparameterGrid, buildGridSearch, trainBestModel
 
 def main():
     
@@ -31,46 +32,13 @@ def main():
     #y: target
     X, y = prepareData(df_data)
     
+    # ----- Split Data -----
     X_Train, X_Test, y_Train, y_Test = train_test_split(X, y, test_size=0.25, random_state=42, stratify = y)
     print("Divisão de treino e teste concluida")
     
-    #Pipeline
-    pipeline = Pipeline([
-    
-    ('tfidf', TfidfVectorizer(stop_words = ['de', 'a', 'o', 'que', 'e', 'do', 'da', 'em', 'um'])),
-    
-    ('scaler', StandardScaler(with_mean = False)),
-    
-    ('logreg', LogisticRegression(solver = 'liblinear', random_state = 42, max_iter = 1000)) 
-    ])
-    
-    # Definir o grid de hiperparâmetros para otimização
-    parametros_grid = {
-        'tfidf__max_features': [500, 1000, 2000],
-        'tfidf__ngram_range': [(1, 1), (1, 2)],
-        'logreg__C': [0.1, 1, 10],
-        'logreg__penalty': ['l1', 'l2'],
-        'logreg__max_iter': [5000, 6000]
-    }
-    
-    # Configurar o GridSearchCV
-    grid_search = GridSearchCV(
-    pipeline,              # Pipeline com as etapas de pré-processamento e modelo
-    parametros_grid,       # Dicionário com as combinações de hiperparâmetros a serem testadas
-    cv = 5,                # Número de divisões para validação cruzada (5-fold cross-validation)
-    n_jobs = -1,           # Usa todos os núcleos disponíveis do processador para acelerar o processo
-    scoring = 'accuracy',  # Métrica usada para avaliar o desempenho de cada combinação (aqui, acurácia)
-    verbose = 1            # Nível de detalhamento do output durante a execução (1 exibe progresso básico)
-    )
-    
-    print("\nIniciando o treinamento do modelo com otimização de hiperparâmetros...\n")
-    grid_search.fit(X_Train, y_Train)
-    
-    print("\nMelhores hiperparâmetros encontrados:\n")
-    print(grid_search.best_params_)
-    
-    # Obter o melhor modelo
-    melhor_modelo_dsa = grid_search.best_estimator_
+    # ----- Model Training -----
+    gridSearch = buildGridSearch()
+    melhor_modelo_dsa = trainBestModel(gridSearch, X_Train, y_Train)
     
     # Previsões no conjunto de teste
     y_pred = melhor_modelo_dsa.predict(X_Test)
