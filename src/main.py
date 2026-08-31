@@ -18,7 +18,8 @@ from clean_data import removeNull, cleanText
 
 from predicting_sentiments import predictSent
 from data_preparation import prepareData
-from model_training import buildPipeline, getHyperparameterGrid, buildGridSearch, trainBestModel
+from model_training import buildGridSearch, trainBestModel
+from model_evaluation import evaluate_model
 
 def main():
     
@@ -61,6 +62,11 @@ def main():
     plt.title('Matriz de Confusão')
     plt.show()
     
+    # ----- Model Evaluation -----
+    evaluate_model(melhor_modelo_dsa, X_Test, y_Test)
+
+    
+    
     # Se estivermos satisfeitos com a performance do modelo, salvamos em disco
     joblib.dump(melhor_modelo_dsa, 'modelo_sentimento_dsa_v1.joblib')
     # Pode deletar o modelo treinado e removê-lo da memória
@@ -83,4 +89,3 @@ def main():
         
 if __name__ == "__main__":
     main()
-
