@@ -3,7 +3,7 @@ import seaborn as sn
 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-from config import GRAPH_EVALUATE
+from config import GRAPH_EVALUATE, PATH_GRAPH
 
 def evaluate_model(bestModel, X_Test, y_Test) -> None:
     """Avalia o modelo e exibe as mesmas métricas e gráfico do fluxo original."""
@@ -36,4 +36,7 @@ def evaluate_model(bestModel, X_Test, y_Test) -> None:
         plt.xlabel('Previsão')
         plt.ylabel('Verdadeiro')
         plt.title('Matriz de Confusão')
+        
+        plt.tight_layout()
+        plt.savefig(PATH_GRAPH / f"Matriz de Confusão.png", dpi=300, bbox_inches='tight')
         plt.show()

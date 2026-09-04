@@ -2,7 +2,7 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from config import INFO_EDA, GRAPH_EDA
+from config import INFO_EDA, GRAPH_EDA, PATH_GRAPH
 
 def eda(df_data: pd.DataFrame)->None:
     
@@ -19,4 +19,7 @@ def eda(df_data: pd.DataFrame)->None:
     if GRAPH_EDA:
         sn.countplot(x='sentimento', data=df_data)
         plt.title("\nDistribuição dos sentimentos")
+        
+        plt.tight_layout()
+        plt.savefig(PATH_GRAPH / f"Distribuição dos sentimentos.png", dpi=300, bbox_inches='tight')
         plt.show()
